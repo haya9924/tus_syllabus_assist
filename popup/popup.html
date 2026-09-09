@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>TUS CLASS Helper</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", "Hiragino Sans", sans-serif; min-width: 240px; margin: 0; padding: 12px; font-size: 13px; color: #222; }
+  h1 { font-size: 14px; margin: 0 0 8px; }
+  .row { display: flex; justify-content: space-between; margin: 4px 0; }
+  .badge { background: #1f7ae0; color: #fff; border-radius: 10px; padding: 1px 8px; font-size: 11px; }
+  button { width: 100%; padding: 8px 10px; margin-top: 8px; background: #1f7ae0; color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; }
+  button:hover { background: #155fa8; }
+  .secondary { background: #f5f5f5; color: #333; }
+  .secondary:hover { background: #e5e5e5; }
+</style>
+</head>
+<body>
+<h1>TUS CLASS Helper</h1>
+<div class="row"><span>保存済み授業</span><span class="badge" id="tce-count">0</span></div>
+<div class="row"><span>履修予定コマ</span><span class="badge" id="tce-planned">0</span></div>
+<div class="row"><span>履修予定 合計単位</span><span class="badge" id="tce-credits">0.0</span></div>
+<div class="row"><span>成績リンク済</span><span class="badge" id="tce-linked">0</span></div>
+<div class="row"><label><input type="checkbox" id="tce-sidebar-toggle" checked> CLASS上のサイドバー表示</label></div>
+<button id="tce-open-dashboard">ダッシュボードを開く</button>
+<button class="secondary" id="tce-open-class">この画面に飛ぶ</button>
+<script src="popup.js"></script>
+</body>
+</html>

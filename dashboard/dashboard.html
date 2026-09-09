@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>TUS CLASS Helper - ダッシュボード</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<header>
+  <h1>TUS CLASS Helper</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="compare">シラバス比較</button>
+    <button class="tab-btn" data-tab="timetable">時間割表</button>
+    <button class="tab-btn" data-tab="grade">成績リンク</button>
+    <button class="tab-btn" data-tab="settings">設定</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 比較 -->
+  <section id="tab-compare" class="tab-panel active">
+    <div class="toolbar">
+      <span class="count" id="tce-compare-count">0 件</span>
+      <label class="muted">並び順
+        <select id="tce-compare-sort">
+          <option value="code">授業コード順</option>
+          <option value="name">科目名順</option>
+          <option value="scoreDesc">スコア降順</option>
+        </select>
+      </label>
+      <button class="btn-primary" id="tce-compare-btn">選択した授業を比較</button>
+      <button class="btn-secondary" id="tce-compare-select-all">全選択</button>
+      <button class="btn-secondary" id="tce-compare-clear">全解除</button>
+    </div>
+    <div class="list" id="tce-course-list"></div>
+    <div class="compare-result" id="tce-compare-result"></div>
+  </section>
+
+  <!-- 時間割 -->
+  <section id="tab-timetable" class="tab-panel">
+    <div class="toolbar">
+      <span class="count" id="tce-tt-count">0 件履修予定</span>
+      <button class="btn-secondary" id="tce-tt-clear">全解除</button>
+    </div>
+    <div class="tt-wrap">
+      <table class="tt-grid" id="tce-tt-grid"></table>
+    </div>
+    <h3>履修予定に追加</h3>
+    <div class="tt-add-list" id="tce-tt-add-list"></div>
+  </section>
+
+  <!-- 成績リンク -->
+  <section id="tab-grade" class="tab-panel">
+    <p class="muted">シラバス詳細画面で追加した保存済み授業を全件表示します。各授業の「成績を接続」から成績照会の候補一覧を選んでリンク／解除できます。候補は成績評価公開授業照会で検索を実行すると自動収集されます。成績一覧の「＋成績追加」で保存したデータは下の「保存した成績データ（未接続）」に並び、保存済み授業への紐付け・削除ができます。</p>
+    <div class="toolbar">
+      <span class="count" id="tce-grade-summary">0 件</span>
+    </div>
+    <div class="list" id="tce-grade-list"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section id="tab-settings" class="tab-panel">
+    <h3>データ管理</h3>
+    <p class="muted">保存先は <code>chrome.storage.local</code>（このPCのみ）。JSONで書き出してバックアップできます。</p>
+    <div class="settings-row">
+      <button class="btn-secondary" id="tce-export">JSONエクスポート</button>
+      <label class="btn-secondary file-label">
+        JSONインポート
+        <input type="file" id="tce-import" accept="application/json" hidden>
+      </label>
+      <button class="btn-danger" id="tce-clear-all">全データを削除</button>
+    </div>
+    <h3>成績スコアの重み（5〜0点）</h3>
+    <p class="muted">成績分布からのスコア = (S×<span id="tce-w-label-s">5</span> + A×<span id="tce-w-label-a">4</span> + B×<span id="tce-w-label-b">3</span> + C×<span id="tce-w-label-c">2</span> + D×<span id="tce-w-label-d">0</span>) ÷ 100。既定では S=5, A=4, B=3, C=2, D=0（最大5.0〜最小0.0）です。</p>
+    <div class="settings-row weights-row">
+      <label>S <input type="number" step="0.5" id="tce-w-s" value="5"></label>
+      <label>A <input type="number" step="0.5" id="tce-w-a" value="4"></label>
+      <label>B <input type="number" step="0.5" id="tce-w-b" value="3"></label>
+      <label>C <input type="number" step="0.5" id="tce-w-c" value="2"></label>
+      <label>D <input type="number" step="0.5" id="tce-w-d" value="0"></label>
+      <button class="btn-secondary" id="tce-weights-save">重みを保存</button>
+      <button class="btn-secondary" id="tce-weights-reset">既定に戻す</button>
+    </div>
+    <h3>サイドバーの表示サイズ</h3>
+    <p class="muted">CLASS上のサイドバーパネルの幅と文字の大きさを変更できます。保存すると開いているCLASSページに即時反映されます。</p>
+    <div class="settings-row size-row">
+      <label>パネル幅 <input type="range" id="tce-sp-width" min="220" max="440" step="10"> <span id="tce-sp-width-val" class="size-val"></span></label>
+      <label>文字サイズ <input type="range" id="tce-sp-font" min="85" max="125" step="5"> <span id="tce-sp-font-val" class="size-val"></span></label>
+      <button class="btn-secondary" id="tce-sp-size-save">サイズを保存</button>
+      <button class="btn-secondary" id="tce-sp-size-reset">既定に戻す</button>
+    </div>
+    <h3>凡例</h3>
+    <ul class="muted">
+      <li>シラバス詳細画面の「+ 比較に追加」: 完全なシラバスを保存（一覧画面からの追加は不可）</li>
+      <li>成績評価公開授業照会の行の「成績をリンク」: 任意の保存済み授業に成績分布を手動紐付け</li>
+      <li>時間割: 「履修予定に追加」した授業が曜日時限から自動配置</li>
+    </ul>
+  </section>
+</main>
+
+<dialog id="tce-modal" class="modal">
+  <form method="dialog">
+    <h3 id="tce-modal-title"></h3>
+    <div id="tce-modal-body"></div>
+    <menu>
+      <button value="cancel">閉じる</button>
+      <button class="primary" value="ok" id="tce-modal-ok">OK</button>
+    </menu>
+  </form>
+</dialog>
+
+<textarea id="tce-clipboard" hidden></textarea>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

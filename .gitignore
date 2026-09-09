@@ -1,0 +1,13 @@
+# 依存パッケージ（テスト用）
+node_modules/
+
+# 署名キー（第三者に渡さないこと。これがあると拡張機能IDを乗っ取れます）
+*.pem
+
+# ビルド成果物（GitHub Releases から配布する）
+*.crx
+
+# 各OSの一時ファイル
+.DS_Store
+Thumbs.db
+*.log
