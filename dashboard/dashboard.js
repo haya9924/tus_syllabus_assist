@@ -265,6 +265,7 @@
         ${gradeStr ? `<div class="grades"><span>${escapeHtml(gradeStr)}</span></div>` : ""}
         ${c.memo ? `<div class="memo">${escapeHtml(c.memo)}</div>` : ""}
         <div class="actions">
+          <button data-act="view" data-code="${escapeHtml(c.classCode)}">シラバスを確認</button>
           <button data-act="tt" data-code="${escapeHtml(c.classCode)}">${planned && planned.planned ? "履修予定を解除" : "履修予定に追加"}</button>
           <button data-act="link" data-code="${escapeHtml(c.classCode)}">成績を見る/編集</button>
           <button data-act="memo" data-code="${escapeHtml(c.classCode)}">メモ</button>
@@ -291,6 +292,8 @@
           const t = await getTimetable();
           await setCoursePlanned(code, !(t[code] && t[code].planned));
           renderCompare();
+        } else if (act === "view") {
+          openSyllabusView(code);
         } else if (act === "link") {
           openGradeEditor(code);
         } else if (act === "memo") {
@@ -383,6 +386,26 @@
       return `<div class="hist-text-line">${escapeHtml(s.name)}: ${line}</div>`;
     }).join("");
     return `${legend}<div class="chist" role="img" aria-label="成績分布比較グラフ">${groups}</div><div class="hist-text">${texts}</div>`;
+  }
+
+  // 単一科目の成績分布ヒストグラム（S/A/B/C/D ごとの棒＋値。シラバス確認画面用）
+  const HIST_COLORS = { s: "#f0c040", a: "#4a8f3f", b: "#3498db", c: "#e67e22", d: "#e74c3c" };
+  function gradeHistogramHtml(g) {
+    g = g || {};
+    if (!HIST_ORDER.some((k) => g[k] != null)) return `<span class="muted">成績データなし</span>`;
+    const groups = HIST_ORDER.map((k) => {
+      const p = g[k] != null ? g[k] : 0;
+      const h = Math.max(2, Math.min(100, p));
+      const bar = g[k] != null
+        ? `<div class="chist-bar" style="height:${h}%;background:${HIST_COLORS[k]};" title="${HIST_LABELS[k]}: ${fmt(p)}%"></div>`
+        : `<div class="chist-bar chist-empty"></div>`;
+      return `<div class="chist-group">
+        <div class="chist-bars">${bar}</div>
+        <div class="chist-label">${HIST_LABELS[k]}</div>
+        <div class="chist-val">${g[k] != null ? fmt(p) + "%" : "-"}</div>
+      </div>`;
+    }).join("");
+    return `<div class="chist" role="img" aria-label="成績分布ヒストグラム">${groups}</div>`;
   }
 
   async function doCompare() {
@@ -526,7 +549,7 @@
             <button data-add="${escapeHtml(c.classCode)}">履修予定に追加</button>
             <button data-memo="${escapeHtml(c.classCode)}">メモ</button>
             <button data-color="${escapeHtml(c.classCode)}">色</button>
-            <button data-view="${escapeHtml(c.classCode)}">詳細</button>
+            <button data-view="${escapeHtml(c.classCode)}">シラバスを確認</button>
           </div>
         `;
         addList.appendChild(card);
@@ -657,6 +680,7 @@
         ${srcHtml}
         ${course.memo ? `<div class="memo">${escapeHtml(course.memo)}</div>` : ""}
         <div class="actions">
+          <button data-view="${escapeHtml(course.classCode)}">シラバスを確認</button>
           <button data-connect="${escapeHtml(course.classCode)}">${link ? "接続先を変更" : "成績を接続"}</button>
           <button data-memo="${escapeHtml(course.classCode)}">メモ</button>
           <button data-color="${escapeHtml(course.classCode)}">色</button>
@@ -665,6 +689,9 @@
         </div>
       `;
       el.appendChild(card);
+    });
+    el.querySelectorAll("button[data-view]").forEach((b) => {
+      b.addEventListener("click", () => openSyllabusView(b.dataset.view));
     });
     el.querySelectorAll("button[data-connect]").forEach((b) => {
       b.addEventListener("click", () => openCandidateModal(b.dataset.connect));
@@ -968,8 +995,22 @@
 
   async function openSyllabusView(code) {
     const courses = await getCourses();
+    const gl = await getGradeLinks();
+    const weights = await getScoreWeights();
     const c = courses[code];
     if (!c) return;
+    const g = c.publicGrades || gl[code] || {};
+    const score = computeGradeScore(g, weights);
+    const actions = `<div class="sv-actions">
+      <button type="button" data-sv-edit="grade">成績を編集</button>
+      <button type="button" data-sv-edit="memo">メモを編集</button>
+      <button type="button" data-sv-edit="color">色を編集</button>
+    </div>`;
+    const gradeBlock = `<div class="sv-grade">
+      <div class="sv-grade-title">成績分布</div>
+      ${gradeHistogramHtml(g)}
+      ${score != null ? `<div class="sv-score">スコア ${score.toFixed(2)}</div>` : ""}
+    </div>`;
     const fields = [
       ["nameJa", "科目名"], ["nameEn", "科目名(英)"], ["classCode", "授業コード"], ["courseNumber", "科目番号"],
       ["instructor", "教員"], ["instructorEn", "教員(英)"], ["department", "学科"], ["yearSemester", "年度学期"],
@@ -984,7 +1025,7 @@
       ["diplomaPolicy", "DPとの関係"], ["instructorExperience", "教員実務経験"], ["remarks", "備考"],
       ["memo", "メモ"], ["color", "色"]
     ];
-    let html = `<table style="width:100%; font-size:12px; border-collapse: collapse;">`;
+    let html = actions + gradeBlock + `<table style="width:100%; font-size:12px; border-collapse: collapse;">`;
     fields.forEach(([k, label]) => {
       const v = c[k] || "";
       let cell;
@@ -997,6 +1038,15 @@
     });
     html += `</table>`;
     openModal(`${c.nameJa || code} のシラバス詳細`, html, null, false, () => {});
+    document.querySelectorAll("[data-sv-edit]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const kind = b.dataset.svEdit;
+        $("tce-modal").close();
+        if (kind === "grade") openGradeEditor(code);
+        else if (kind === "memo") openMemoEditor(code);
+        else openColorEditor(code);
+      });
+    });
   }
 
   // ===========================================================
