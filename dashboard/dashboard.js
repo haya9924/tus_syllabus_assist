@@ -265,9 +265,8 @@
         ${gradeStr ? `<div class="grades"><span>${escapeHtml(gradeStr)}</span></div>` : ""}
         ${c.memo ? `<div class="memo">${escapeHtml(c.memo)}</div>` : ""}
         <div class="actions">
-          <button data-act="view" data-code="${escapeHtml(c.classCode)}">シラバスを確認</button>
+          <button data-act="view" data-code="${escapeHtml(c.classCode)}">詳細</button>
           <button data-act="tt" data-code="${escapeHtml(c.classCode)}">${planned && planned.planned ? "履修予定を解除" : "履修予定に追加"}</button>
-          <button data-act="link" data-code="${escapeHtml(c.classCode)}">成績を見る/編集</button>
           <button data-act="memo" data-code="${escapeHtml(c.classCode)}">メモ</button>
           <button data-act="color" data-code="${escapeHtml(c.classCode)}">色</button>
           <button data-act="del" data-code="${escapeHtml(c.classCode)}">削除</button>
@@ -294,8 +293,6 @@
           renderCompare();
         } else if (act === "view") {
           openSyllabusView(code);
-        } else if (act === "link") {
-          openGradeEditor(code);
         } else if (act === "memo") {
           openMemoEditor(code);
         } else if (act === "color") {
@@ -549,7 +546,7 @@
             <button data-add="${escapeHtml(c.classCode)}">履修予定に追加</button>
             <button data-memo="${escapeHtml(c.classCode)}">メモ</button>
             <button data-color="${escapeHtml(c.classCode)}">色</button>
-            <button data-view="${escapeHtml(c.classCode)}">シラバスを確認</button>
+            <button data-view="${escapeHtml(c.classCode)}">詳細</button>
           </div>
         `;
         addList.appendChild(card);
@@ -680,7 +677,7 @@
         ${srcHtml}
         ${course.memo ? `<div class="memo">${escapeHtml(course.memo)}</div>` : ""}
         <div class="actions">
-          <button data-view="${escapeHtml(course.classCode)}">シラバスを確認</button>
+          <button data-view="${escapeHtml(course.classCode)}">詳細</button>
           <button data-connect="${escapeHtml(course.classCode)}">${link ? "接続先を変更" : "成績を接続"}</button>
           <button data-memo="${escapeHtml(course.classCode)}">メモ</button>
           <button data-color="${escapeHtml(course.classCode)}">色</button>

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TUS CLASS シラバス比較・時間割",
   "short_name": "TUS CLASS Helper",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "成績評価公開授業照会 / シラバス照会画面に「追加」「リンク」ボタンを追加し、拡張機能独自のページでシラバス比較・簡易時間割表・成績分布の紐付けを行えます。",
   "permissions": ["storage", "tabs", "scripting"],
   "host_permissions": [

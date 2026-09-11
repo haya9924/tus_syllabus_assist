@@ -1,9 +1,9 @@
-// 全パネルの「シラバスを確認」ボタン＋シラバス確認モーダル（成績ヒストグラム・編集ボタン）のテスト
+// 全パネルの「詳細」ボタン＋シラバス詳細モーダル（成績ヒストグラム・編集ボタン）のテスト
 // node test_syllabus_view.js
-// 1. 比較カードに「シラバスを確認」ボタンがあり、クリックでシラバス詳細＋成績ヒストグラム＋編集ボタンが表示
-// 2. シラバス確認内の「成績を編集」→成績編集モーダルが開き保存される
-// 3. シラバス確認内の「メモを編集」→メモ編集モーダルが開く
-// 4. 成績タブ・時間割追加候補のパネルにも「シラバスを確認」ボタンがある
+// 1. 比較カードに「詳細」ボタンがあり、クリックでシラバス詳細＋成績ヒストグラム＋編集ボタンが表示（「成績を見る/編集」ボタンはパネルに無い）
+// 2. シラバス詳細内の「成績を編集」→成績編集モーダルが開き保存される
+// 3. シラバス詳細内の「メモを編集」→メモ編集モーダルが開く
+// 4. 成績タブ・時間割追加候補のパネルにも「詳細」ボタンがある
 
 const fs = require("fs");
 const path = require("path");
@@ -83,18 +83,21 @@ async function main() {
     return null;
   };
 
-  // ---- 1. 比較カードの「シラバスを確認」→ シラバス詳細＋成績ヒストグラム＋編集ボタン ----
+  // ---- 1. 比較カードの「詳細」→ シラバス詳細＋成績ヒストグラム＋編集ボタン ----
   await waitFor(() => cardOf("テスト科目A"), 5000, "比較カード描画");
-  const viewBtn = cardOf("テスト科目A").querySelector('button[data-act="view"]');
-  console.assert(viewBtn && viewBtn.textContent === "シラバスを確認", "1:比較カードにシラバス確認ボタン");
+  const cardA = cardOf("テスト科目A");
+  console.assert(!cardA.querySelector('button[data-act="link"]'), "1:パネルに成績を見る/編集ボタンは無い");
+  const viewBtn = cardA.querySelector('button[data-act="view"]');
+  console.assert(viewBtn && viewBtn.textContent === "詳細", "1:比較カードに詳細ボタン");
   viewBtn.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
-  const sv = await waitFor(() => document.querySelector("#tce-modal-body .sv-grade"), 5000, "1:シラバス確認モーダル");
+  const sv = await waitFor(() => document.querySelector("#tce-modal-body .sv-grade"), 5000, "1:シラバス詳細モーダル");
   const chist = sv.querySelector(".chist");
   console.assert(chist, "1:成績ヒストグラム表示");
   console.assert(chist.querySelectorAll(".chist-group").length === 5, "1:ヒストグラム5判定");
   console.assert(chist.querySelectorAll(".chist-val").length === 5, "1:ヒストグラムに値表示");
   console.assert(/スコア 4.50/.test(sv.textContent), "1:スコア表示: " + sv.textContent);
   console.assert(/概要文/.test(document.getElementById("tce-modal-body").textContent), "1:シラバス詳細表示");
+  console.assert(!document.querySelector('#tce-modal-body [data-act="link"]'), "1:詳細内にも成績を見る/編集ボタンは無い");
   const edits = document.querySelectorAll("#tce-modal-body [data-sv-edit]");
   console.assert(edits.length === 3, "1:編集ボタン3つ: " + edits.length);
   console.assert(Array.from(edits).map((b) => b.textContent).join(",") === "成績を編集,メモを編集,色を編集",
@@ -123,17 +126,17 @@ async function main() {
   modal.close("cancel");
   console.log("✓ 3: メモを編集 通過");
 
-  // ---- 4. 成績タブ・時間割追加候補にも「シラバスを確認」ボタン ----
+  // ---- 4. 成績タブ・時間割追加候補にも「詳細」ボタン ----
   document.querySelector('.tab-btn[data-tab="grade"]')
     .dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
   await waitFor(() => cardOf("テスト科目A", "#tce-grade-list"), 5000, "4:成績タブ描画");
   const gViewBtn = cardOf("テスト科目A", "#tce-grade-list").querySelector('button[data-view]');
-  console.assert(gViewBtn && gViewBtn.textContent === "シラバスを確認", "4:成績タブにシラバス確認ボタン");
+  console.assert(gViewBtn && gViewBtn.textContent === "詳細", "4:成績タブに詳細ボタン");
   document.querySelector('.tab-btn[data-tab="timetable"]')
     .dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
   await waitFor(() => cardOf("テスト科目A", "#tce-tt-add-list"), 5000, "4:時間割候補描画");
   const ttViewBtn = cardOf("テスト科目A", "#tce-tt-add-list").querySelector('button[data-view]');
-  console.assert(ttViewBtn && ttViewBtn.textContent === "シラバスを確認", "4:時間割候補にシラバス確認ボタン");
+  console.assert(ttViewBtn && ttViewBtn.textContent === "詳細", "4:時間割候補に詳細ボタン");
   console.log("✓ 4: 全パネルにボタン 通過");
 
   console.log("SYLLABUS VIEW TESTS PASSED");
