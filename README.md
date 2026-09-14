@@ -124,6 +124,8 @@ settings:    { scoreWeights: { s,a,b,c,d }, sidebar: { enabled, expanded, planne
 - **時間割表**: カードの「履修予定に追加」で曜日時限に従い自動配置。重複コマは赤色。空きセルダブルクリックでメモ追加。追加リストの候補にも成績スコアを表示。**追加候補カードからもメモ・色を編集可**（保存するとコマ表示にも反映）
 - **成績リンク**: 保存済み全件表示 → 接続／接続解除／直接編集
 - **設定**: スコア重みの変更、サイドバー表示サイズの変更、JSON エクスポート/インポート、全データ削除
+  - **JSONインポート**: 「JSONインポート」ボタンからバックアップJSON（`tus-class-helper-*.json`）を選ぶと既存データに上書きマージされます。**バックアップJSONを設定タブにドラッグ＆ドロップ**でも取り込めます
+  - 読み込めない場合は、本拡張の「JSONエクスポート」で書き出したファイルか確認してください（破損・JSON形式でない場合は具体的なエラーメッセージが表示されます）
 
 ## ファイル構成
 
@@ -154,6 +156,7 @@ test_sidebar_size.js   # サイドバーサイズ設定の動作テスト（node
 test_course_color.js   # 講座色付けの動作テスト（node + jsdom）
 test_tt_addlist_hist.js# 時間割追加候補のメモ・色編集＋比較ヒストグラムの動作テスト（node + jsdom）
 test_syllabus_view.js  # 全パネルの「詳細」＋成績ヒストグラム・編集ボタンの動作テスト（node + jsdom）
+test_import.js         # JSONインポート（ファイル選択・ドラッグ&ドロップ・エラー処理）のテスト（node + jsdom）
 ```
 
 ## 開発・テスト
@@ -171,6 +174,7 @@ node test_sidebar.js        # サイドバーのテスト
 node test_sidebar_size.js   # サイドバーサイズ設定のテスト
 node test_tt_addlist_hist.js# 時間割追加候補＋比較ヒストグラムのテスト
 node test_syllabus_view.js  # シラバス確認モーダルのテスト
+node test_import.js        # JSONインポートのテスト
 ```
 
 > テスト実行には jsdom が必要です（`npm install jsdom`）。

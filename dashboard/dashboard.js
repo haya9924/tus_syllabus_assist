@@ -1072,13 +1072,24 @@
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
   });
 
-  $("tce-import").addEventListener("change", async (e) => {
-    const file = e.target.files && e.target.files[0];
+  // JSON取り込み（ファイル選択・ドラッグ&ドロップ共通）
+  async function runImportFile(file) {
     if (!file) return;
-    if (!confirm("既存のデータに上書きマージします。続行しますか？")) return;
+    if (!confirm("既存のデータに上書きマージします。続行しますか？\n\n（ファイル: " + (file.name || "") + "）")) {
+      alert("取り込みをキャンセルしました");
+      return;
+    }
     try {
       const text = await file.text();
-      const obj = JSON.parse(text);
+      let obj;
+      try {
+        obj = JSON.parse(text);
+      } catch (parseErr) {
+        throw new Error("JSONとして解析できませんでした（バックアップではなく編集・保存で壊れた可能性）: " + parseErr.message);
+      }
+      if (!obj || typeof obj !== "object" || !obj.courses) {
+        throw new Error("本拡張機能が書き出したバックアップJSONではありません（courses データがありません）");
+      }
       const data = {};
       if (obj.courses) data[K.COURSES] = obj.courses;
       if (obj.gradeLinks) data[K.GRADE_LINKS] = obj.gradeLinks;
@@ -1090,13 +1101,43 @@
         data[K.SETTINGS] = Object.assign({}, cur, obj.settings);
       }
       await set(data);
+      // 書き込み検証（容量制限などで失敗しても lastError は握り潰されるため確認する）
+      const verify = await get(K.COURSES);
+      const gotCourses = verify.courses || {};
+      if (obj.courses && Object.keys(obj.courses).length > 0 && Object.keys(gotCourses).length === 0) {
+        throw new Error("ストレージへの書き込みが確認できません。拡張機能のページを再読み込みしてからもう一度お試しください");
+      }
       renderCompare();
       renderTimetable();
       renderGrade();
-      alert("インポートしました");
+      alert(`インポートしました（授業 ${Object.keys(obj.courses).length} 件 / 成績候補 ${Object.keys(obj.gradeRows || {}).length} 件）`);
     } catch (err) {
       alert("インポート失敗: " + err.message);
     }
+  }
+  $("tce-import").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    // 同じファイルを再選択しても change が発火するようリセット
+    e.target.value = "";
+    if (!file) return;
+    runImportFile(file);
+  });
+  // 設定タブへのドラッグ&ドロップでも取り込めるようにする（ファイル選択が使えない環境の代替）
+  const settingsSec = $("tab-settings");
+  ["dragenter", "dragover"].forEach((t) => {
+    settingsSec.addEventListener(t, (e) => {
+      if (!e.dataTransfer || !Array.from(e.dataTransfer.types || "").includes("Files")) return;
+      e.preventDefault();
+      settingsSec.classList.add("drag-over");
+    });
+  });
+  ["dragleave", "drop"].forEach((t) => {
+    settingsSec.addEventListener(t, (e) => { settingsSec.classList.remove("drag-over"); });
+  });
+  settingsSec.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const f = Array.from((e.dataTransfer && e.dataTransfer.files) || [])[0];
+    if (f) runImportFile(f);
   });
 
   $("tce-clear-all").addEventListener("click", async () => {

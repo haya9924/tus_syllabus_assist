@@ -66,10 +66,11 @@
       <button class="btn-secondary" id="tce-export">JSONエクスポート</button>
       <label class="btn-secondary file-label">
         JSONインポート
-        <input type="file" id="tce-import" accept="application/json" hidden>
+        <input type="file" id="tce-import" accept="application/json,.json,text/plain" hidden>
       </label>
       <button class="btn-danger" id="tce-clear-all">全データを削除</button>
     </div>
+    <p class="muted">ヒント: バックアップJSONをこの画面（設定タブ）にドラッグ＆ドロップしても取り込めます。</p>
     <h3>成績スコアの重み（5〜0点）</h3>
     <p class="muted">成績分布からのスコア = (S×<span id="tce-w-label-s">5</span> + A×<span id="tce-w-label-a">4</span> + B×<span id="tce-w-label-b">3</span> + C×<span id="tce-w-label-c">2</span> + D×<span id="tce-w-label-d">0</span>) ÷ 100。既定では S=5, A=4, B=3, C=2, D=0（最大5.0〜最小0.0）です。</p>
     <div class="settings-row weights-row">
