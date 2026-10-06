@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>提出完了の演出 — テスト表示 | LETUS Assist</title>
+<link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<header>
+  <h1>提出完了の演出 — テスト表示</h1>
+  <p class="sub">
+    実際に課題を提出しなくても演出を確認できます。<b>実績（XP・レベル・連続日数）は変化しません。</b>
+  </p>
+</header>
+
+<main>
+  <section>
+    <h2>見た目の条件</h2>
+    <div class="grid">
+      <label class="fld"><span>連続提出日数（倍率）</span>
+        <select id="streak">
+          <option value="1">1日 — ×1 NICE</option>
+          <option value="2">2日 — ×2 GREAT</option>
+          <option value="3" selected>3日 — ×3 SUPER</option>
+          <option value="4">4日 — ×3 SUPER</option>
+          <option value="5">5日 — ×4 ULTRA</option>
+          <option value="6">6日 — ×4 ULTRA</option>
+          <option value="9">9日 — ×5 LEGEND</option>
+        </select>
+      </label>
+      <label class="fld"><span>レベル</span>
+        <input type="number" id="level" min="1" max="60" step="1" value="15">
+      </label>
+      <label class="fld"><span>レベルアップ</span>
+        <select id="levelup">
+          <option value="yes" selected>する（LEVEL UP! と追加演出）</option>
+          <option value="no">しない</option>
+        </select>
+      </label>
+      <label class="fld"><span>期限との関係</span>
+        <select id="due">
+          <option value="early" selected>72時間以上前（+100）</option>
+          <option value="soon">24時間以上前（+50）</option>
+          <option value="tight">ぎりぎり（期限内ボーナスのみ +100）</option>
+          <option value="late">期限超過（基本のみ）</option>
+          <option value="none">期限なし</option>
+        </select>
+      </label>
+      <label class="fld"><span>集中した時間（分）</span>
+        <input type="number" id="focus" min="0" max="999" step="1" value="42">
+      </label>
+      <label class="fld"><span>課題名</span>
+        <input type="text" id="name" value="第3回課題提出">
+      </label>
+      <label class="fld"><span>コース名</span>
+        <input type="text" id="course" value="プログラミングとアルゴリズム１ (994321G)">
+      </label>
+    </div>
+  </section>
+
+  <section>
+    <h2>演出の設定</h2>
+    <div class="grid">
+      <label class="fld"><span>効果音</span>
+        <select id="sound">
+          <option value="on" selected>鳴らす</option>
+          <option value="off">鳴らさない</option>
+        </select>
+      </label>
+      <label class="fld"><span>紙吹雪の量</span>
+        <input type="number" id="confetti" min="0" max="900" step="20" value="380">
+      </label>
+      <label class="fld"><span>自動で閉じる（秒）</span>
+        <input type="number" id="autoClose" min="0" max="120" step="1" value="25">
+      </label>
+      <label class="fld"><span>ストロボの強さ</span>
+        <select id="strobe">
+          <option value="off">なし</option>
+          <option value="weak">弱</option>
+          <option value="normal" selected>中</option>
+          <option value="max">強</option>
+        </select>
+      </label>
+      <label class="fld"><span>演出の激しさ</span>
+        <select id="intensity">
+          <option value="off">off（リールを回さない）</option>
+          <option value="normal" selected>標準</option>
+          <option value="max">max（約2倍）</option>
+        </select>
+      </label>
+      <label class="fld"><span>当たりの背景（七色）</span>
+        <select id="rainbow">
+          <option value="off">off</option>
+          <option value="normal" selected>標準</option>
+          <option value="max">max</option>
+        </select>
+      </label>
+    </div>
+    <p class="note">
+      保存されている設定（設定ページの「7. 提出完了の演出」）を初期値にしています。
+      ここでの変更は保存されません。
+    </p>
+    <div class="btns">
+      <button type="button" id="play" class="btn primary">演出を再生</button>
+      <button type="button" id="loadSettings" class="btn">保存済みの設定を読み込む</button>
+      <button type="button" id="openOptions" class="btn">設定ページを開く</button>
+    </div>
+    <p class="status" id="status"></p>
+  </section>
+
+  <section>
+    <h2>確認ポイント</h2>
+    <ul class="check">
+      <li>枠の電飾が光り、保留ランプが 1 つずつ点灯する（チャッカー／ピポ音）</li>
+      <li>中央のリールが回転し、「リーチ！」で減速して「提・出・済・み」の順に停止する</li>
+      <li>大当たりで停止したリールが <b>LETUS の提出済みと同じ薄緑（#cfefcf）</b> になる</li>
+      <li>大当たりで<b>背景が七色</b>になる（中心は暗く抜かれ、枠と結果は読みやすいまま回転する）</li>
+      <li>電飾が 赤 → 金 → 虹 と変化し、ストロボが焚かれる（強さは設定に従う）</li>
+      <li>3D の「課題提出」が回転しながら手前に飛び出して定位置に収まる</li>
+      <li>紙吹雪が下の左右から噴き上がり、上からも降ってくる</li>
+      <li>その下に「SUPER COMPLETE!!」とティアバッジ、XP、レベルバー、LEVEL UP</li>
+      <li>3D「課題提出」が<b>画面外の左から大きく回転しながら入り</b>、中央を少し通り過ぎてから定位置に収まる</li>
+      <li>3D が収まってから結果パネル（SUPER COMPLETE!! と XP）が出る</li>
+      <li>「スキップ」で結果まで飛ばせる／「とじる」／Esc／背景クリック／自動で閉じる</li>
+    </ul>
+    <p class="note">
+      音はブラウザの自動再生ポリシーでブロックされることがあります。
+      その場合は演出内の「🔊 クリックで音を有効にする」を一度押してください。
+    </p>
+    <p class="note warn">
+      ⚠ ストロボ「中」「強」は画面が激しく点滅します。体調に不安がある場合は「なし」にしてください。
+    </p>
+  </section>
+</main>
+
+<script src="../shared/defaults.js"></script>
+<script src="../shared/icons.js"></script>
+<script src="../shared/dateutil.js"></script>
+<script src="../shared/game.js"></script>
+<script src="../content/assign-extract.js"></script>
+<script src="../content/celebrate-style.js"></script>
+<script src="../content/celebrate-lights.js"></script>
+<script src="../content/celebrate-reels.js"></script>
+<script src="../content/celebrate-text3d.js"></script>
+<script src="../content/celebrate-frame.js"></script>
+<script src="../content/celebrate-canvas.js"></script>
+<script src="../content/celebrate-sound.js"></script>
+<script src="../content/celebrate.js"></script>
+<script src="preview.js"></script>
+</body>
+</html>

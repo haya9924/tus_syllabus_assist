@@ -1,0 +1,89 @@
+/* LETUS Assist - 課題ページ用スタイル */
+
+#la-todo-panel {
+  margin: 1rem 0 1.5rem;
+  padding: .9rem 1rem;
+  border: 1px solid rgba(0, 0, 0, .125);
+  border-left: 4px solid #0ea5e9;
+  border-radius: .3rem;
+  background: #f8fafc;
+  font-size: .95rem;
+}
+
+#la-todo-panel .la-todo-info {
+  color: #475569;
+  font-size: .9rem;
+  margin-bottom: .6rem;
+  word-break: break-word;
+}
+
+#la-todo-panel .la-todo-actions {
+  position: relative;
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+}
+
+#la-todo-panel .la-todo-main {
+  font-weight: 700;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#la-todo-panel .la-todo-menu-btn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-left: -6px;
+}
+
+#la-todo-panel .la-todo-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 190px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: .3rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+  z-index: 20;
+  overflow: hidden;
+}
+
+#la-todo-panel .la-todo-menu.hidden {
+  display: none;
+}
+
+#la-todo-panel .la-todo-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: .5rem .75rem;
+  border: 0;
+  background: #fff;
+  font-size: .9rem;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+#la-todo-panel .la-todo-menu-item:hover {
+  background: #e0f2fe;
+}
+
+#la-todo-panel .la-todo-status {
+  margin-top: .55rem;
+  font-size: .88rem;
+  min-height: 1.2em;
+  word-break: break-word;
+}
+
+#la-todo-panel .la-todo-status.la-todo-ok { color: #15803d; }
+#la-todo-panel .la-todo-status.la-todo-error { color: #b91c1c; }
+#la-todo-panel .la-todo-status.la-todo-info { color: #0369a1; }
+
+#la-todo-panel.la-busy {
+  opacity: .7;
+  pointer-events: none;
+}

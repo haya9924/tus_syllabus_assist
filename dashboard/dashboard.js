@@ -1274,3 +1274,12 @@
   // ---- 初期表示 ----
   renderCompare();
 })();
+
+/* ---- LETUS 設定への導線（統合版で追加） ---- */
+(function () {
+  var btn = document.getElementById('tce-open-letus');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    chrome.runtime.sendMessage({ type: 'openOptions' });
+  });
+})();

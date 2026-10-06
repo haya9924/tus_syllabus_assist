@@ -1,12 +1,16 @@
 {
-  "name": "tus-class-extension",
+  "name": "tus-assist",
   "version": "1.0.0",
-  "description": "",
+  "description": "東京理科大学の CLASS と LETUS を1つにまとめた Chrome 拡張機能",
   "main": "background.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:class && npm run test:letus",
+    "test:class": "for f in test_*.js; do node \"$f\" || exit 1; done",
+    "test:letus": "for f in letus/tests/*.test.js; do node \"$f\" || exit 1; done",
+    "test:letus:load": "node letus/tests/load.test.js",
+    "test:letus:merged": "node letus/tests/merged.test.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": ["chrome-extension", "moodle", "tus", "letus", "class"],
+  "author": "haya9924",
+  "license": "MIT"
 }

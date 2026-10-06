@@ -1,0 +1,295 @@
+/* LETUS Assist - トップページ用スタイル */
+
+/* 位置記録用の placeholder（レイアウトには一切影響しない） */
+.la-anchor {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  height: 0 !important;
+}
+
+.la-slot {
+  /* Bootstrap のカラム指定で潰されないようにする */
+  width: 100%;
+  max-width: none;
+  float: none !important;
+  clear: both;
+  box-sizing: border-box;
+  margin: 0 0 1rem;
+}
+
+.la-slotbar {
+  display: flex;
+  align-items: center;
+  gap: .35em;
+  font-size: 12px;
+  line-height: 1;
+  padding: .25em .4em;
+  border-radius: .25rem;
+  background: rgba(0, 0, 0, .04);
+  color: #6b7280;
+  margin-bottom: .35em;
+  user-select: none;
+}
+
+.la-slotbar .la-slotlabel {
+  font-weight: 700;
+  color: #374151;
+  margin-right: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.la-grip {
+  cursor: grab;
+  font-size: 15px;
+  line-height: 1;
+  padding: 2px 3px;
+  border-radius: 3px;
+  color: #9ca3af;
+}
+
+.la-grip:hover { background: rgba(0, 0, 0, .08); color: #374151; }
+.la-grip:active { cursor: grabbing; }
+
+.la-mini {
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 5px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #4b5563;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.la-mini:hover { background: #f3f4f6; color: #111827; }
+
+.la-slot.la-dragging,
+.la-slotbar.la-dragging,
+li.la-dragging {
+  opacity: .55;
+  outline: 2px dashed #0ea5e9;
+  outline-offset: 2px;
+}
+
+/* --- 入れ替え後の表示調整 ------------------------------------------- */
+
+/* メインカラムに来たマイコースを主役に（見出しの上にアクセント罫線） */
+.la-slot-wide > .block_course_list {
+  border-top: 4px solid var(--la-accent, #0f766e);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, .08);
+}
+
+.la-slot-wide .block_course_list h3.card-title {
+  border-bottom: 1px solid rgba(0, 0, 0, .08);
+  padding-bottom: .35em;
+  margin-bottom: .45em;
+}
+
+/* サイドバーに来たサイトニュースはカード化 */
+.la-slot-narrow > #site-news-forum {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, .125);
+  border-radius: .25rem;
+  padding: .5rem .65rem;
+}
+
+.la-slot-narrow #site-news-forum .subscribelink {
+  font-size: 11px;
+  margin-top: .2rem;
+}
+
+/* 折りたためる（サイドバーでは縦に伸ばさない） */
+#site-news-forum > details.la-news > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: .35em;
+  font-weight: 700;
+  padding: .15rem 0;
+}
+
+#site-news-forum > details.la-news > summary::-webkit-details-marker { display: none; }
+
+#site-news-forum > details.la-news > summary::after {
+  content: '\25BE';
+  margin-left: auto;
+  font-size: .8em;
+  color: #94a3b8;
+  transition: transform .15s;
+}
+
+#site-news-forum > details.la-news[open] > summary::after { transform: rotate(180deg); }
+
+#site-news-forum > details.la-news > summary h2 {
+  margin: 0;
+  border: 0 !important;
+  padding: 0 !important;
+  font-size: inherit;
+  color: inherit;
+}
+
+#site-news-forum details.la-news .la-news-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: .35rem;
+  font-size: .92em;
+}
+
+/* --- マイコース 一覧のリンク ---------------------------------------- */
+
+.la-slot .block_course_list ul.unlist > li a {
+  transition: color .12s ease-in-out;
+}
+
+.la-slot .block_course_list ul.unlist > li a:hover,
+.la-slot .block_course_list ul.unlist > li a:focus {
+  color: var(--la-hover, #0b5f59) !important;
+}
+
+.la-slot .block_course_list ul.unlist > li > i.icon {
+  width: 1.2em;
+  text-align: center;
+}
+
+/* --- 並べ替えモード時の操作列 ---------------------------------------- */
+/* li の display は LETUS の CSS をそのまま使い、ここでは書き換えない
+   （display:flex を強制すると項目が潰れて横並びに見えるため） */
+
+section.block_course_list ul.unlist > li.la-item {
+  position: relative;
+}
+
+/* 操作列は「並べ替え」モードのときだけ表示する（ホバーでは出さない）。
+   誤って非表示にしたり、文字に重なったりするのを避けるため。 */
+li.la-item > .la-itembar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  gap: .1em;
+  padding-right: .2em;
+  background: rgba(255, 255, 255, .95);
+  border-radius: 3px;
+  z-index: 2;
+}
+
+body.la-edit li.la-item > .la-itembar {
+  display: inline-flex;
+}
+
+/* 操作列のぶんの余白を確保して文字と重ならないようにする */
+body.la-edit li.la-item {
+  padding-left: 4.6em;
+  outline: 1px dashed rgba(14, 165, 233, .5);
+  border-radius: 3px;
+}
+
+li.la-item > .la-itembar .la-mini {
+  font-size: 9px;
+  padding: 2px 4px;
+}
+
+li.la-item > .la-itembar .la-cog {
+  color: #0f766e;
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+li.la-item > .la-itembar .la-cog:hover {
+  background: #ccfbf1;
+}
+
+/* --- コースの非表示 ------------------------------------------------- */
+/* 表示/非表示は inline style (display:none) で制御する。
+   非表示にしたコースは一覧の下の「非表示のコース」パネルから戻す。 */
+
+.la-hidden-list {
+  margin-top: .6em;
+  border-top: 1px dashed rgba(0, 0, 0, .12);
+  padding-top: .5em;
+  font-size: .9em;
+}
+
+.la-hidden-list[hidden] {
+  display: none;
+}
+
+.la-hidden-list > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  font-weight: 700;
+  color: #64748b;
+  font-size: .95em;
+}
+
+.la-hidden-list > summary::-webkit-details-marker { display: none; }
+
+.la-hidden-list > summary::before {
+  content: '\25B8';
+  font-size: .9em;
+  color: #94a3b8;
+  transition: transform .15s;
+}
+
+.la-hidden-list[open] > summary::before { transform: rotate(90deg); }
+
+.la-hidden-note {
+  margin: .4em 0 .5em;
+  color: #94a3b8;
+  font-size: .92em;
+}
+
+.la-hidden-items {
+  list-style: none;
+  margin: 0 0 .6em;
+  padding: 0;
+  display: grid;
+  gap: .25em;
+}
+
+.la-hidden-row {
+  display: flex;
+  align-items: center;
+  gap: .45em;
+  padding: .2em .3em;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .03);
+}
+
+.la-hidden-row i.icon {
+  flex: 0 0 auto;
+  color: #94a3b8;
+}
+
+.la-hidden-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #64748b;
+}
+
+.la-hidden-row .la-restore {
+  flex: 0 0 auto;
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+.la-mini.la-unhide-all {
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+/* スロットバーの並べ替えボタンは常に操作可 */
+.la-slotbar .la-mini { cursor: pointer; }

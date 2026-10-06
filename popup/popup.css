@@ -1,0 +1,64 @@
+body {
+  width: 288px;
+  margin: 0;
+  padding: 12px 14px 14px;
+  font-family: -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-size: 13px;
+  color: #222;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  border-left: 4px solid #1f7ae0;
+  padding-left: 7px;
+}
+
+.sec { margin-bottom: 10px; }
+.sec-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  margin: 0 0 4px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2px;
+}
+
+.row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+.lbl { color: #475569; }
+.val { font-weight: 600; text-align: right; }
+.row.ok .val { color: #15803d; }
+.row.ng .val { color: #b45309; }
+
+.badge {
+  background: #1f7ae0;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+}
+
+.chk { display: flex; align-items: center; gap: .4em; margin-top: 6px; font-size: 12px; color: #475569; }
+
+.achv { margin: 4px 0 6px; padding: 8px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
+.achv .row2 { display: flex; align-items: baseline; gap: 8px; }
+.achv .lv { font-size: 20px; font-weight: 900; color: #7c3aed; }
+.achv .awname { font-size: 12px; font-weight: 700; color: #4c1d95; }
+.achv .bar { height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; margin: 6px 0 4px; }
+.achv .bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #22d3ee, #a855f7 55%, #f472b6); }
+.achv .sub { font-size: 11px; color: #64748b; }
+
+button {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 8px;
+  background: #1f7ae0;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+button:hover { background: #155fa8; }
+button.secondary { background: #f5f5f5; color: #333; }
+button.secondary:hover { background: #e5e5e5; }

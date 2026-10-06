@@ -1,19 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "TUS CLASS シラバス比較・時間割",
-  "short_name": "TUS CLASS Helper",
-  "version": "0.9.9",
-  "description": "成績評価公開授業照会 / シラバス照会画面に「追加」「リンク」ボタンを追加し、拡張機能独自のページでシラバス比較・簡易時間割表・成績分布の紐付けを行えます。",
+  "name": "TUS Assist（CLASS + LETUS）",
+  "short_name": "TUS Assist",
+  "version": "1.0.0",
+  "description": "東京理科大学の CLASS（シラバス比較・時間割・成績リンク・履修計画）と LETUS（トップページ改造・課題の To Do 連携・提出演出）を1つにまとめた拡張機能です。",
+  "minimum_chrome_version": "116",
   "permissions": ["storage", "tabs", "scripting"],
+  "optional_permissions": ["identity"],
+  "optional_host_permissions": [
+    "https://tasks.googleapis.com/*",
+    "https://graph.microsoft.com/*",
+    "https://login.microsoftonline.com/*"
+  ],
   "host_permissions": [
     "https://class.admin.tus.ac.jp/*",
     "https://*.tus.ac.jp/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
-    "default_title": "TUS CLASS Helper",
+    "default_title": "TUS Assist",
     "default_popup": "popup/popup.html",
     "default_icon": {
       "48": "icons/icon48.png",
@@ -26,16 +34,58 @@
     "96": "icons/icon96.png",
     "128": "icons/icon128.png"
   },
+  "options_ui": {
+    "page": "letus/options/options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": [
         "https://class.admin.tus.ac.jp/*",
         "https://*.tus.ac.jp/*"
       ],
-      "js": ["content/parser.js", "content/content.js", "content/sidebar.js"],
+      "exclude_matches": [
+        "https://letus.ed.tus.ac.jp/*"
+      ],
+      "js": [
+        "content/parser.js",
+        "content/content.js",
+        "content/sidebar.js"
+      ],
       "css": ["content/content.css"],
       "run_at": "document_idle",
       "all_frames": true
+    },
+    {
+      "matches": ["https://letus.ed.tus.ac.jp/*"],
+      "js": [
+        "letus/shared/defaults.js",
+        "letus/shared/icons.js",
+        "letus/shared/dateutil.js",
+        "letus/shared/game.js",
+        "letus/content/top-core.js",
+        "letus/content/top-layout.js",
+        "letus/content/top-style.js",
+        "letus/content/ui-toast.js",
+        "letus/content/top-sort.js",
+        "letus/content/top.js",
+        "letus/content/assign-extract.js",
+        "letus/content/assign.js",
+        "letus/content/course-settings.js",
+        "letus/content/celebrate-style.js",
+        "letus/content/celebrate-lights.js",
+        "letus/content/celebrate-reels.js",
+        "letus/content/celebrate-text3d.js",
+        "letus/content/celebrate-frame.js",
+        "letus/content/celebrate-canvas.js",
+        "letus/content/celebrate-sound.js",
+        "letus/content/celebrate.js"
+      ],
+      "css": [
+        "letus/content/top.css",
+        "letus/content/assign.css"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
@@ -43,5 +93,9 @@
       "resources": ["dashboard/dashboard.html", "dashboard/dashboard.css"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "oauth2": {
+    "client_id": "REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/tasks"]
+  }
 }

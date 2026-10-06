@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>LETUS Assist — 設定</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<header>
+  <h1>LETUS Assist</h1>
+  <p class="sub">LETUS(Moodle) トップページのカスタマイズと、課題の To Do 追加設定</p>
+</header>
+
+<main>
+
+<section>
+  <h2>1. トップページの配置</h2>
+  <div class="row">
+    <label class="fld">
+      <span>ブロックの配置</span>
+      <select data-path="top.mode">
+        <option value="swap">入れ替え（推奨）：マイコースとサイトニュースの位置を丸ごと交換</option>
+        <option value="both-main">両方メインカラム：マイコース → サイトニュース の順</option>
+        <option value="native">LETUS 元の配置（マイコース=左サイドバー / サイトニュース=メイン）</option>
+      </select>
+    </label>
+    <label class="fld">
+      <span>メインカラム内の並び順<br><small>「両方メインカラム」で反映されます</small></span>
+      <select data-path="top.order" data-order-select>
+        <option value="mycourses,sitenews">マイコース → サイトニュース</option>
+        <option value="sitenews,mycourses">サイトニュース → マイコース</option>
+      </select>
+    </label>
+  </div>
+  <p class="note">
+    「入れ替え」では、<b>マイコースがサイトニュースがあった位置（メインカラム）へ</b>、
+    <b>サイトニュースがマイコースがいた位置（左サイドバー）へ</b> 移動します。ページ全体の先頭に移動することはありません。
+  </p>
+  <p class="note">実際の並べ替えはページ上の「⠿」ドラッグ、または各ブロックの「並べ替え」ボタン（▲▼）で行えます。順序は保存されます。</p>
+</section>
+
+<section>
+  <h2>2. マイコースの見た目</h2>
+  <div class="grid">
+    <label class="fld"><span>見出しの文言</span><input type="text" data-path="top.courseHeaderText"></label>
+    <label class="fld"><span>見出しのアイコン</span>
+      <select data-path="top.courseHeaderIcon" data-icon-select></select>
+      <input type="text" class="mono" data-path="top.courseHeaderIcon" data-icon-text placeholder="fa-book-open">
+    </label>
+    <label class="fld"><span>見出しの文字サイズ (px)</span><input type="number" min="10" max="72" step="1" data-path="top.courseHeaderFontSize"></label>
+    <label class="fld"><span>見出しの色</span><input type="color" data-path="top.courseHeaderColor"></label>
+
+    <label class="fld"><span>アクセント色</span><input type="color" data-path="top.courseAccent"></label>
+    <label class="fld"><span>各項目のアイコン</span>
+      <select data-path="top.courseIcon" data-icon-select></select>
+      <input type="text" class="mono" data-path="top.courseIcon" data-icon-text placeholder="fa-graduation-cap">
+    </label>
+    <label class="fld"><span>各項目の文字サイズ (px)</span><input type="number" min="8" max="48" step="1" data-path="top.courseFontSize"></label>
+    <label class="fld"><span>各項目の文字色</span><input type="color" data-path="top.courseTextColor"></label>
+    <label class="fld"><span>ホバー時の色</span><input type="color" data-path="top.courseHoverColor"></label>
+    <label class="fld"><span>背景色</span><input type="color" data-path="top.courseBgColor" data-alpha></label>
+    <label class="fld"><span>列数</span>
+      <select data-path="top.courseColumns">
+        <option value="1">1 列</option>
+        <option value="2">2 列</option>
+        <option value="3">3 列</option>
+        <option value="4">4 列</option>
+      </select>
+    </label>
+  </div>
+  <div class="btns">
+    <button type="button" id="resetCourseOrder" class="btn">コース一覧の並び順をリセット</button>
+    <button type="button" id="unhideAll" class="btn">非表示にしたコースをすべて表示</button>
+    <button type="button" id="clearCourseStyles" class="btn">個別の色・アイコンをすべて初期化</button>
+  </div>
+  <p class="note">
+    一覧の各項目にカーソルを合わせると <b>⠿ ▲▼ ●</b> が表示されます。
+    <b>●</b> を押すとそのコースを一覧から隠します（非表示にした courses は下の「非表示のコース」から戻せます）。
+  </p>
+  <p class="status" id="hiddenStatus"></p>
+</section>
+
+<section>
+  <h2>2-2. コースごとの個別設定</h2>
+  <p class="note">
+    LETUS のトップページで「並べ替え」を押すと、各コースの左に <b>⠿ ▲▼ ⚙</b> が出ます。
+    <b>⚙</b> から、そのコースだけの文字色・アイコン・非表示を設定できます。
+  </p>
+  <div id="styleList" class="achv"></div>
+  <p class="status" id="styleStatus"></p>
+</section>
+
+<section>
+  <h2>3. サイトニュースの見た目</h2>
+  <div class="grid">
+    <label class="fld"><span>見出しの文言</span><input type="text" data-path="top.newsHeaderText"></label>
+    <label class="fld"><span>見出しのアイコン</span>
+      <select data-path="top.newsHeaderIcon" data-icon-select></select>
+      <input type="text" class="mono" data-path="top.newsHeaderIcon" data-icon-text placeholder="fa-bullhorn">
+    </label>
+    <label class="fld"><span>見出しの文字サイズ (px)</span><input type="number" min="10" max="48" step="1" data-path="top.newsHeaderFontSize"></label>
+    <label class="fld"><span>見出しの色</span><input type="color" data-path="top.newsHeaderColor"></label>
+    <label class="fld"><span>本文の文字サイズ (px)</span><input type="number" min="8" max="32" step="1" data-path="top.newsFontSize"></label>
+    <label class="fld"><span>本文の文字色</span><input type="color" data-path="top.newsTextColor"></label>
+    <label class="fld inline">
+      <span>サイドバーでは折りたたむ</span>
+      <select data-path="top.newsCollapsed">
+        <option value="true">初期状態は折りたたむ（クリックで開く）</option>
+        <option value="false">常に表示する</option>
+      </select>
+    </label>
+  </div>
+</section>
+
+<section>
+  <h2>4. To Do への追加</h2>
+  <div class="row">
+    <label class="fld">
+      <span>既定の追加先</span>
+      <select data-path="todo.defaultService">
+        <option value="google">Google Tasks</option>
+        <option value="microsoft">Microsoft To Do</option>
+      </select>
+    </label>
+    <label class="fld">
+      <span>タイムゾーン</span>
+      <select data-path="todo.timeZone">
+        <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+        <option value="Asia/Seoul">Asia/Seoul</option>
+        <option value="Europe/London">Europe/London</option>
+        <option value="America/New_York">America/New_York</option>
+        <option value="America/Los_Angeles">America/Los_Angeles</option>
+        <option value="UTC">UTC</option>
+      </select>
+    </label>
+  </div>
+  <div class="grid">
+    <label class="fld"><span>タスク名のテンプレート<br><small>{course} {name} {section} {due} {url}</small></span>
+      <input type="text" class="mono" data-path="todo.titleTemplate"></label>
+    <label class="fld"><span>メモのテンプレート<br><small>{url} {course} {name}</small></span>
+      <input type="text" class="mono" data-path="todo.noteTemplate"></label>
+    <label class="fld"><span>期限が無い課題</span>
+      <select data-path="todo.noDueFallback">
+        <option value="none">期限を設定しない</option>
+        <option value="plus1">翌日 22:59 を設定</option>
+        <option value="plus3">3日後 22:59 を設定</option>
+        <option value="endofweek">週末 22:59 を設定</option>
+      </select>
+    </label>
+  </div>
+</section>
+
+<section>
+  <h2>5. To Do 連携の許可</h2>
+  <p class="status" id="permStatus">確認中…</p>
+  <p class="note">
+    Google Tasks / Microsoft To Do への追加には、認証（identity）と各サービスの通信先へのアクセス許可が必要です。
+    <b>使い始めるときに一度だけ</b>許可を求めます。<b>この拡張機能の他の機能（CLASS・LETUS の改造・演出）は許可なしで動きます。</b>
+  </p>
+  <div class="btns">
+    <button type="button" id="todoEnable" class="btn primary">To Do 連携を有効にする</button>
+    <button type="button" id="todoDisable" class="btn">許可を解除する</button>
+  </div>
+  <p class="status" id="permResult"></p>
+</section>
+
+<section>
+  <h2>6. Google Tasks 連携</h2>
+  <p class="status" id="googleStatus">確認中…</p>
+  <ol class="howto">
+    <li><a href="https://console.cloud.google.com/apis/library/tasks.googleapis.com" target="_blank" rel="noreferrer">Google Cloud の API ライブラリ</a> で <b>Google Tasks API</b> を有効化する。</li>
+    <li>同じ画面で <b>OAuth 同意画面</b> を設定し、アプリの公開ステータスを「テスト」、テストユーザーに自分の Google アカウントを追加する。</li>
+    <li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">認証情報</a> → <b>OAuth クライアントIDを作成</b> → アプリケーションの種類は <b>Chrome 拡張機能</b> を選ぶ。</li>
+    <li>作成したクライアントIDを <code>manifest.json</code> の <code>oauth2.client_id</code> に貼り付け、拡張機能を再読み込みする。</li>
+  </ol>
+  <div class="grid">
+    <label class="fld"><span>タスクリスト ID<br><small>@default = 既定の「マイタスク」</small></span>
+      <input type="text" class="mono" data-path="todo.googleTaskList"></label>
+  </div>
+  <div class="btns"><button type="button" id="googleDisconnect" class="btn">Google の認証を解除</button></div>
+</section>
+
+<section>
+  <h2>7. Microsoft To Do 連携</h2>
+  <p class="status" id="msStatus">確認中…</p>
+  <ol class="howto">
+    <li><a href="https://entra.microsoft.com/" target="_blank" rel="noreferrer">Microsoft Entra 管理センター</a> → <b>アプリ登録</b> → <b>新しい登録</b>。</li>
+    <li>認証設定で <b>プラットフォーム: シングルページアプリケーション (SPA)</b>、リダイレクト URI に <code id="msRedirect"></code> を追加して保存する。</li>
+    <li>下にある「クライアントID」を貼り付けて <b>接続</b> を押す。</li>
+  </ol>
+  <div class="grid">
+    <label class="fld"><span>アプリケーション (クライアント) ID</span>
+      <input type="text" class="mono" data-path="todo.msClientId" placeholder="00000000-0000-0000-0000-000000000000"></label>
+    <label class="fld"><span>テナント</span>
+      <select data-path="todo.msTenant">
+        <option value="consumers">個人用 Microsoft アカウント (consumers)</option>
+        <option value="common">組織/個人 共通 (common)</option>
+      </select>
+    </label>
+    <label class="fld"><span>追加先のリスト名</span>
+      <input type="text" data-path="todo.msListName" placeholder="Tasks"></label>
+    <label class="fld"><span>リマインダー</span>
+      <select data-path="todo.msReminder">
+        <option value="true">期限の前に通知する</option>
+        <option value="false">通知しない</option>
+      </select>
+    </label>
+    <label class="fld"><span>何分前に通知</span>
+      <input type="number" min="0" max="10080" step="15" data-path="todo.reminderMinutesBefore"></label>
+  </div>
+  <div class="btns">
+    <button type="button" id="msConnect" class="btn primary">接続</button>
+    <button type="button" id="msDisconnect" class="btn">接続を解除</button>
+    <button type="button" id="msTest" class="btn">接続テスト（リスト取得）</button>
+  </div>
+  <p class="status" id="msResult"></p>
+</section>
+
+
+<section>
+  <h2>8. 提出完了の演出</h2>
+  <p class="note">
+    課題（出席チェック含む）を提出した直後に「SUPER COMPLETE!!」の演出を表示します。
+    提出ボタン（<code>id_submitbutton</code>）を押した時だけ発火し、下書き保存では出ません。
+  </p>
+  <div class="grid">
+    <label class="fld"><span>演出を有効にする</span>
+      <select data-path="celebrate.enabled">
+        <option value="true">表示する</option>
+        <option value="false">表示しない</option>
+      </select>
+    </label>
+    <label class="fld"><span>効果音（合成音）</span>
+      <select data-path="celebrate.sound">
+        <option value="true">鳴らす</option>
+        <option value="false">鳴らさない</option>
+      </select>
+    </label>
+    <label class="fld"><span>自動で閉じる（秒）<br><small>0 で自動では閉じない</small></span>
+      <input type="number" min="0" max="120" step="1" data-path="celebrate.autoCloseSec">
+    </label>
+    <label class="fld"><span>ストロボの強さ<br><small>点滅のみを制御します</small></span>
+      <select data-path="celebrate.strobe">
+        <option value="off">なし（まぶしくしない）</option>
+        <option value="weak">弱</option>
+        <option value="normal">中</option>
+        <option value="max">強（激しい点滅）</option>
+      </select>
+    </label>
+    <label class="fld"><span>演出の激しさ<br><small>リール・紙吹雪・音量・追加演出</small></span>
+      <select data-path="celebrate.intensity">
+        <option value="off">off（控えめ・リールは回さない）</option>
+        <option value="normal">標準</option>
+        <option value="max">max（標準の約2倍・激しい）</option>
+      </select>
+    </label>
+    <label class="fld"><span>当たりの背景（七色）<br><small>大当たりで回転する放射状の七色</small></span>
+      <select data-path="celebrate.rainbow">
+        <option value="off">off（暗い背景のまま）</option>
+        <option value="normal">標準（ゆっくり回転）</option>
+        <option value="max">max（高速回転＋色相回転＋重ね）</option>
+      </select>
+    </label>
+    <label class="fld"><span>紙吹雪の量</span>
+      <input type="number" min="0" max="900" step="20" data-path="celebrate.confetti">
+    </label>
+  </div>
+  <div class="btns">
+    <button type="button" id="testCelebrate" class="btn primary">演出をテスト表示</button>
+  </div>
+  <p class="note">
+    課題を実際に提出しなくても演出を確認できます。条件（倍率・レベルアップ・紙吹雪の量など）を
+    変えて試せる専用ページが開きます。<b>実績は変化しません。</b>
+  </p>
+  <p class="note">
+    音はページ遷移直後のため、Chrome の自動再生ポリシーでブロックされることがあります。
+    その場合は演出内の「🔊 クリックで音を有効にする」を一度押すと鳴ります。
+  </p>
+  <p class="note warn">
+    ⚠ 「ストロボの強さ」を上げると画面が激しく点滅します。光過敏性発作などのおそれがあるため、
+    体調に不安がある場合は「なし」にしてください。OS の「視差効果を減らす」が有効なときは自動で点滅しません。
+  </p>
+</section>
+
+<section>
+  <h2>9. 実績（XP・レベル・連続提出）</h2>
+  <div id="achv" class="achv">読み込み中…</div>
+  <div class="btns">
+    <button type="button" id="resetGame" class="btn danger">実績をリセット</button>
+  </div>
+  <p class="status" id="gameStatus"></p>
+</section>
+
+</main>
+
+<footer>
+  <span id="saveState" class="savestate">自動保存されます</span>
+  <button type="button" id="resetAll" class="btn danger">すべての設定をリセット</button>
+</footer>
+
+<script src="../shared/defaults.js"></script>
+<script src="../shared/icons.js"></script>
+<script src="../shared/dateutil.js"></script>
+<script src="../shared/game.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
