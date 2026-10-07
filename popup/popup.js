@@ -86,6 +86,52 @@
     }).catch(() => { /* ignore */ });
   }
 
+  /* --------------------------------------------------------- ダークモード */
+
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function themeHint(cfg) {
+    if (cfg.mode === 'off') return 'ダークモードはオフです';
+    if (cfg.mode === 'on') return 'いつでも暗くなります';
+    if (cfg.schedule === 'system') return 'OS（端末）の設定に合わせます';
+    const tr = window.TUS_THEME ? TUS_THEME.nextTransition(cfg, new Date()) : null;
+    if (!tr) return '切替の予定がありません（時刻が同じになっていませんか）';
+    const a = tr.at;
+    return (a.getMonth() + 1) + '/' + a.getDate() + ' ' + pad2(a.getHours()) + ':' + pad2(a.getMinutes()) +
+      ' に' + (tr.dark ? '暗くなる' : '明るくなる');
+  }
+
+  function syncThemeUI(cfg) {
+    $('tus-mode').value = cfg.mode;
+    $('tus-schedule').value = cfg.schedule;
+    $('tus-start').value = cfg.time.start;
+    $('tus-end').value = cfg.time.end;
+    $('tus-t-class').checked = cfg.targets.class !== false;
+    $('tus-t-letus').checked = cfg.targets.letus !== false;
+    $('tus-t-ui').checked = cfg.targets.ui !== false;
+    $('tus-auto').hidden = cfg.mode !== 'auto';
+    $('tus-time-row').hidden = cfg.schedule !== 'time';
+    $('tus-next').textContent = themeHint(cfg);
+  }
+
+  function loadTheme() {
+    if (!window.TUS_THEME) return;
+    TUS_THEME.getSettings().then(syncThemeUI);
+  }
+
+  function saveTheme(patch) {
+    if (!window.TUS_THEME) return;
+    TUS_THEME.setSettings(patch).then(syncThemeUI);
+  }
+
+  $('tus-mode').addEventListener('change', (e) => saveTheme({ mode: e.target.value }));
+  $('tus-schedule').addEventListener('change', (e) => saveTheme({ schedule: e.target.value }));
+  $('tus-start').addEventListener('change', (e) => saveTheme({ time: { start: e.target.value } }));
+  $('tus-end').addEventListener('change', (e) => saveTheme({ time: { end: e.target.value } }));
+  $('tus-t-class').addEventListener('change', (e) => saveTheme({ targets: { class: e.target.checked } }));
+  $('tus-t-letus').addEventListener('change', (e) => saveTheme({ targets: { letus: e.target.checked } }));
+  $('tus-t-ui').addEventListener('change', (e) => saveTheme({ targets: { ui: e.target.checked } }));
+
   /* ------------------------------------------------------------ ボタン */
 
   $('tce-open-dashboard').addEventListener('click', () => {
@@ -119,6 +165,7 @@
   chrome.storage.onChanged.addListener(refreshClass);
   refreshClass();
   refreshSidebarToggle();
+  loadTheme();
   renderGame();
   renderTodoStatus();
 })();

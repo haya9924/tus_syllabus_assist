@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>TUS Assist</title>
 <link rel="stylesheet" href="popup.css">
+<script src="../shared/theme.js"></script>
 </head>
 <body>
 <h1>TUS Assist</h1>
@@ -20,6 +21,35 @@
 <div class="sec">
   <div class="sec-title">LETUS（課題・提出）</div>
   <div id="body"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-title">ダークモード</div>
+  <label class="fld"><span>モード</span>
+    <select id="tus-mode">
+      <option value="off">オフ</option>
+      <option value="on">常に入れる</option>
+      <option value="auto">自動で切り替える</option>
+    </select>
+  </label>
+  <div id="tus-auto" hidden>
+    <label class="fld"><span>切り替えの条件</span>
+      <select id="tus-schedule">
+        <option value="time">時刻を指定</option>
+        <option value="sun">日の出 〜 日の入り</option>
+        <option value="system">OS の設定に合わせる</option>
+      </select>
+    </label>
+    <label class="fld" id="tus-time-row"><span>暗くなる時刻 〜 明るくなる時刻</span>
+      <span class="times"><input type="time" id="tus-start" step="60"><i>〜</i><input type="time" id="tus-end" step="60"></span>
+    </label>
+    <p class="hint" id="tus-next"></p>
+  </div>
+  <div class="targets">
+    <label class="chk"><input type="checkbox" id="tus-t-class"> CLASS</label>
+    <label class="chk"><input type="checkbox" id="tus-t-letus"> LETUS</label>
+    <label class="chk"><input type="checkbox" id="tus-t-ui"> 拡張の画面</label>
+  </div>
 </div>
 
 <button id="tce-open-dashboard">CLASS ダッシュボードを開く</button>

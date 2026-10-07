@@ -1,10 +1,11 @@
 {
   "name": "tus-assist",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "東京理科大学の CLASS と LETUS を1つにまとめた Chrome 拡張機能",
   "main": "background.js",
   "scripts": {
-    "test": "npm run test:class && npm run test:letus",
+    "test": "npm run test:theme && npm run test:class && npm run test:letus",
+    "test:theme": "node shared/theme.test.js",
     "test:class": "for f in test_*.js; do node \"$f\" || exit 1; done",
     "test:letus": "for f in letus/tests/*.test.js; do node \"$f\" || exit 1; done",
     "test:letus:load": "node letus/tests/load.test.js",

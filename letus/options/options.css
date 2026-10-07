@@ -150,3 +150,42 @@ footer {
 .achv td a { color: #0369a1; }
 
 .note.warn { color: #b45309; }
+
+/* --- ダークモード --- */
+html[data-tus-theme="dark"] {
+  color-scheme: dark;
+  --bd: #2a323c;
+  --tx: #e5e7eb;
+  --mut: #9aa5b1;
+  --ac: #14b8a6;
+}
+html[data-tus-theme="dark"] body { background: #0f141a; }
+html[data-tus-theme="dark"] header { background: #171d25; }
+html[data-tus-theme="dark"] section { background: #171d25; }
+html[data-tus-theme="dark"] footer { background: #171d25; }
+html[data-tus-theme="dark"] input[type="text"],
+html[data-tus-theme="dark"] input[type="number"],
+html[data-tus-theme="dark"] select,
+html[data-tus-theme="dark"] input[type="color"] {
+  background: #0f1317;
+  border-color: #39414a;
+  color: var(--tx);
+}
+html[data-tus-theme="dark"] .btn { background: #232a33; border-color: #39414a; }
+html[data-tus-theme="dark"] .btn:hover { background: #2b333c; }
+html[data-tus-theme="dark"] .btn.primary { background: var(--ac); border-color: var(--ac); color: #06201d; }
+html[data-tus-theme="dark"] .btn.primary:hover { background: #0f9e90; }
+html[data-tus-theme="dark"] .btn.danger { border-color: #7f3b3b; color: #f87171; }
+html[data-tus-theme="dark"] .btn.danger:hover { background: #3a1a1a; }
+html[data-tus-theme="dark"] .howto { color: #c7ced6; }
+html[data-tus-theme="dark"] .howto a { color: #4db1ea; }
+html[data-tus-theme="dark"] code { background: #1c222a; }
+html[data-tus-theme="dark"] .status { color: var(--tx); }
+html[data-tus-theme="dark"] .status.ok { color: #4ade80; }
+html[data-tus-theme="dark"] .status.bad { color: #f87171; }
+html[data-tus-theme="dark"] .savestate.saved { color: #4ade80; }
+html[data-tus-theme="dark"] .achv .awname { color: #c4b5fd; }
+html[data-tus-theme="dark"] .achv .bar { background: #2a323c; }
+html[data-tus-theme="dark"] .achv .swatch { border-color: rgba(255, 255, 255, 0.2); }
+html[data-tus-theme="dark"] .achv td a { color: #4db1ea; }
+html[data-tus-theme="dark"] .note.warn { color: #fbbf24; }

@@ -9,6 +9,7 @@
 
 - インストールは **1回だけ**。CLASS のデータ（履修・成績）と LETUS のデータ（実績・設定）は別キーで `chrome.storage.local` に保存され、互いに干渉しません
 - **To Do 連携に必要な権限（認証・各サービスへの通信）はオプション権限**です。許可しなくても他の機能はすべて動きます
+- **ダークモード**を CLASS・LETUS・拡張の各画面に用意しています（時刻指定 / 日の出〜日の入り / OS 設定）
 
 ## インストール
 
@@ -430,6 +431,43 @@ Web Audio で合成するため音声ファイルは不要です。パチンコ�
 
 ---
 
+## ダークモード
+
+CLASS・LETUS・拡張の画面を暗くします。操作は **ツールバーのポップアップだけ**（設定ページはありません）。
+
+### 使い方
+
+ポップアップ下部の「ダークモード」で次を切り替えます。
+
+| 項目 | 選択肢 |
+|---|---|
+| **切替** | オフ ／ 常に暗く ／ 自動（下の自動切替に従う） |
+| **自動切替** | 時刻指定（開始〜終了、終了が開始より前なら翌日扱い） ／ 日の出〜日の入り ／ OS の設定 |
+| **対象** | CLASS ／ LETUS ／ 拡張の画面（ポップアップ・ダッシュボード・設定・演出テスト）を個別に ON/OFF |
+
+「次に切り替わる予定」のヒントが表示され、保存は即時・対象タブへ反映されます。
+
+- **日の出・日の入**は固定座標（東京 緯度 35.70 / 経度 139.74）で計算しています。座標の入力 UI はありません
+- 時刻指定で終了時刻が開始時刻より前（例 19:00 → 06:00）の場合は **日をまたいで暗くなります**
+- 切替の判定は `chrome.storage.local` の `tusTheme` キー（既定 `mode: "off"`）で行います
+
+### 仕組み（ホストページ側）
+
+クラス・LETUS のページは **反転方式** です（サイト側の CSS を書き換えません）。
+
+- `html` の上に `backdrop-filter: invert(1) hue-rotate(180deg)` の **透過オーバーレイ**を常時置き、ページ全体を反転します
+- その上に拡張が置いた UI（シラバス比較ボタン・スロットバー・サイドバー・トーストなど）は **再反転** して元の配色のまま表示します（ホストページの z-index 9999999 に対し当拡張は 2147483000〜）
+- 写真・動画・アイコン・キャプチャ用 canvas は再反転して元の色に戻します
+- 反転で黒くなる白背景を防ぐため、ダーク時のみ `html` の背景を白にしておきます
+- `color-scheme: dark` は **ホストページでは使いません**（UA のフォーム部品が反転されて明るく浮くため）。拡張ページ側でのみ使用します
+
+### 制限
+
+- 網掛け・透過 PNG など、反転すると色が変わる素材は完全には再現できません
+- サイト側が追加した要素やサービス内蔵のポップアップも一括で反転されます（拡張側の再反転対象外）
+
+---
+
 ## To Do 連携のセットアップ（要 1 回だけ）
 
 **必要な権限はオプション権限です。** 設定ページの「5. To Do 連携の許可」で「**To Do 連携を有効にする**」を押すか、
@@ -518,6 +556,10 @@ Microsoft To Do も「期限込みでタスクを作れる URL スキーム」�
 | `game.xp` / `game.level` | `0` / `1` | 累積 XP と到達レベル |
 | `game.streakDays` / `game.bestStreak` | `0` | 現在 / 最長の連続提出日数 |
 | `game.history` | `[]` | 提出履歴（直近50件） |
+| `tusTheme.mode` | `off` | `off` / `on` / `auto` |
+| `tusTheme.schedule` | `time` | `time`（時刻指定） / `sun`（日の出〜日の入り） / `system`（OS 設定） |
+| `tusTheme.time` | `{ start: "19:00", end: "06:00" }` | `schedule: "time"` の開始・終了時刻 |
+| `tusTheme.targets` | `{ class: true, letus: true, ui: true }` | 対象別の ON/OFF（CLASS / LETUS / 拡張画面） |
 
 設定は変更即 `chrome.storage.local` に保存され、開いている LETUS のタブへ**即時反映**されます
 （`chrome.storage.onChanged` を content script が購読）。
@@ -542,6 +584,7 @@ LETUS 側で追加されるキー:
 ```
 letusAssist:         { top, todo, celebrate, game, ui }   // LETUS の設定・実績
 letusAssistRuntime:  { lastOpenAt, seenStatus }           // 提出検知の一時データ
+tusTheme:            { mode, schedule, time, targets }    // ダークモード設定（CLASS/LETUS/拡張の共通）
 ```
 
 ---
@@ -551,6 +594,10 @@ letusAssistRuntime:  { lastOpenAt, seenStatus }           // 提出検知の一�
 ```
 manifest.json          # MV3 マニフェスト（CLASS + LETUS 統合）
 background.js          # 統合 Service Worker（CLASS のバッジ + LETUS の To Do/設定）
+shared/
+  theme.js             # ダークモードのエンジン（太陽位置・切替判定・テーマ反映）
+  dark-host.css        # 反転オーバーレイと注入UIの再反転
+  theme.test.js        # ダークモードの単体テスト（node）
 
 # ---- CLASS ----
 content/
@@ -613,6 +660,17 @@ node letus/tests/course.test.js      # コース個別設定
 node letus/tests/regress.test.js     # トップページ/課題ページの回帰
 node letus/tests/preview.test.js     # 演出のテスト表示ページ
 node letus/tests/merged.test.js      # 統合拡張のスモーク（CLASS が LETUS に注入されない 等）
+node letus/tests/theme.test.js       # ダークモードの E2E（反転・ポップアップ操作・保存）
+node letus/tests/darkcss.test.js     # dark-host.css の再反転ルール検証（CLASS 注入UI 含む）
+node letus/tests/load.test.js        # 設定ページ/ポップアップの読み込み
+```
+
+### ダークモード（node 単体）
+
+```bash
+node shared/theme.test.js            # 太陽位置・時間窓・次回切替の計算
+# もしくは
+npm run test:theme
 ```
 
 ---

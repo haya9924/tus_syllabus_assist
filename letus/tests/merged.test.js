@@ -35,7 +35,15 @@ const log = (s) => console.log(s);
   const mf = await sw.evaluate(() => chrome.runtime.getManifest());
   log('  名前: ' + mf.name + ' v' + mf.version);
   check('統合された名前', /TUS Assist/.test(mf.name), mf.name);
-  check('content_scripts が2系統', mf.content_scripts.length === 2, mf.content_scripts.map((c) => c.matches[0]));
+  check('content_scripts が3系統（CLASS / LETUS / ダークモード）',
+    mf.content_scripts.length === 3,
+    mf.content_scripts.map((c) => (c.js || []).join(',').split('/').pop()));
+  const themeEntry = mf.content_scripts.find((c) => (c.js || []).some((j) => /shared\/theme\.js$/.test(j)));
+  check('ダークモードの content script がある（document_start）',
+    !!themeEntry && themeEntry.run_at === 'document_start' &&
+    themeEntry.css.some((c) => /dark-host\.css$/.test(c)) &&
+    themeEntry.matches.some((m) => /\*\.tus\.ac\.jp/.test(m)),
+    themeEntry);
   check('CLASS 側に LETUS の除外がある',
     (mf.content_scripts[0].exclude_matches || []).some((u) => /letus\.ed\.tus\.ac\.jp/.test(u)),
     mf.content_scripts[0].exclude_matches);

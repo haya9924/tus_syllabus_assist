@@ -1,0 +1,140 @@
+/* TUS Assist - ホストページ（CLASS / LETUS）のダークモード
+ *
+ * 方式: <html data-tus-theme="dark"> のときだけ、ページ全体の背後へ
+ * 「反転（invert）＋色相回転（hue-rotate 180）」のオーバーレイを重ねる。
+ *
+ *   - <html> へ filter を付けるのは position:fixed の包含ブロックが壊れるため不可。
+ *   - オーバーレイは pointer-events:none なので操作はそのまま。
+ *   - オーバーレイより上の z-index（当拡張のサイドバー・演出・トースト等）は
+ *     反転されないため、それらは元のデザインのまま表示される。
+ *   - オーバーレイより下にある「当拡張が注入したUI」は二重反転で元の色に戻す。
+ *
+ * 注意: color-scheme は付けない（dark にするとフォーム部品の UA 配色が反転し、
+ * 明るい入力欄が暗いページに浮いてしまうため）。
+ */
+
+html[data-tus-theme="dark"] {
+  /* canvas を白にして上から反転させ、確実に黒く見せる */
+  background: #fff;
+}
+
+html[data-tus-theme="dark"]::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2147482000;
+  pointer-events: none;
+  -webkit-backdrop-filter: invert(1) hue-rotate(180deg);
+  backdrop-filter: invert(1) hue-rotate(180deg);
+}
+
+/* 文書自体のスクロールバーはオーバーレイの外に出るため、こちらで暗くする */
+html[data-tus-theme="dark"]::-webkit-scrollbar { width: 14px; height: 14px; }
+html[data-tus-theme="dark"]::-webkit-scrollbar-track { background: #1b1f24; }
+html[data-tus-theme="dark"]::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border: 3px solid #1b1f24;
+  border-radius: 8px;
+}
+html[data-tus-theme="dark"]::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+/* ---------------------------------------------------------------- 再反転（元の色に戻す） */
+/* ここに並べるのは「拡張が注入した最外殻」だけ。子は親の filter が一括で適用する。
+   網羅漏れ・入れ子の二重適用に注意（下の打ち消しルール参照）。 */
+
+html[data-tus-theme="dark"] .tce-btn,
+html[data-tus-theme="dark"] .tce-syllabus-action,
+html[data-tus-theme="dark"] .tce-dialog-link,
+html[data-tus-theme="dark"] .tce-mini-note,
+html[data-tus-theme="dark"] .tce-score-head,
+html[data-tus-theme="dark"] .tce-score-cell,
+html[data-tus-theme="dark"] .tce-sortbar,
+html[data-tus-theme="dark"] .tce-picker,
+html[data-tus-theme="dark"] .la-slotbar,
+html[data-tus-theme="dark"] .la-hidden-list,
+html[data-tus-theme="dark"] .la-itembar,
+html[data-tus-theme="dark"] #la-todo-panel {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* 入れ子の打ち消し:
+   - 親がすでに再反転している要素は、自分では反転しない
+   - サイドバー（#tce-sidepanel）はオーバーレイより上に描画されるため元のまま */
+html[data-tus-theme="dark"] .tce-sortbar .tce-btn {
+  filter: none;
+}
+html[data-tus-theme="dark"] #tce-sidepanel :is(
+  .tce-btn, .tce-syllabus-action, .tce-dialog-link, .tce-mini-note,
+  .tce-score-head, .tce-score-cell, .tce-sortbar, .tce-picker
+),
+html[data-tus-theme="dark"] #tce-sidepanel img,
+html[data-tus-theme="dark"] #tce-sidepanel video,
+html[data-tus-theme="dark"] #tce-sidepanel picture,
+html[data-tus-theme="dark"] #tce-sidepanel canvas,
+html[data-tus-theme="dark"] #tce-sidepanel iframe,
+html[data-tus-theme="dark"] #tce-sidepanel [style*="background-image"] {
+  filter: none;
+}
+
+/* ------------------------------------------------------------------ 画像・動画は元の色 */
+/* 写真やロゴが反転すると不自然なので、本文中のメディアだけ元に戻す。
+   documentElement 直下（演出キャンバス等）は対象に含めない。 */
+
+html[data-tus-theme="dark"] body img,
+html[data-tus-theme="dark"] body video,
+html[data-tus-theme="dark"] body picture,
+html[data-tus-theme="dark"] body canvas,
+html[data-tus-theme="dark"] body iframe,
+html[data-tus-theme="dark"] body [style*="background-image"] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* 上記の再反転コンテナ内では、メディアは親が処理済み */
+html[data-tus-theme="dark"] .tce-btn img,
+html[data-tus-theme="dark"] .tce-syllabus-action img,
+html[data-tus-theme="dark"] .tce-dialog-link img,
+html[data-tus-theme="dark"] .tce-score-head img,
+html[data-tus-theme="dark"] .tce-score-cell img,
+html[data-tus-theme="dark"] .tce-sortbar img,
+html[data-tus-theme="dark"] .tce-picker img,
+html[data-tus-theme="dark"] .la-slotbar img,
+html[data-tus-theme="dark"] .la-hidden-list img,
+html[data-tus-theme="dark"] .la-itembar img,
+html[data-tus-theme="dark"] #la-todo-panel img,
+html[data-tus-theme="dark"] .tce-sortbar video,
+html[data-tus-theme="dark"] .tce-sortbar picture,
+html[data-tus-theme="dark"] .tce-sortbar canvas,
+html[data-tus-theme="dark"] .tce-sortbar iframe,
+html[data-tus-theme="dark"] .tce-picker video,
+html[data-tus-theme="dark"] .tce-picker picture,
+html[data-tus-theme="dark"] .tce-picker canvas,
+html[data-tus-theme="dark"] .tce-picker iframe,
+html[data-tus-theme="dark"] .la-slotbar video,
+html[data-tus-theme="dark"] .la-slotbar picture,
+html[data-tus-theme="dark"] .la-slotbar canvas,
+html[data-tus-theme="dark"] .la-slotbar iframe,
+html[data-tus-theme="dark"] .la-hidden-list video,
+html[data-tus-theme="dark"] .la-hidden-list picture,
+html[data-tus-theme="dark"] .la-hidden-list canvas,
+html[data-tus-theme="dark"] .la-hidden-list iframe,
+html[data-tus-theme="dark"] .la-itembar video,
+html[data-tus-theme="dark"] .la-itembar picture,
+html[data-tus-theme="dark"] .la-itembar canvas,
+html[data-tus-theme="dark"] .la-itembar iframe,
+html[data-tus-theme="dark"] #la-todo-panel video,
+html[data-tus-theme="dark"] #la-todo-panel picture,
+html[data-tus-theme="dark"] #la-todo-panel canvas,
+html[data-tus-theme="dark"] #la-todo-panel iframe {
+  filter: none;
+}
+
+/* ------------------------------------------------------------ モーダル背景を暗くする */
+/* 黒 50% のバックドロップは反転すると白 50% になってしまうため戻す */
+
+html[data-tus-theme="dark"] .modal-backdrop,
+html[data-tus-theme="dark"] [data-flexitour="backdrop"] {
+  filter: invert(1) hue-rotate(180deg);
+}

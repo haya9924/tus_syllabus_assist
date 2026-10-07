@@ -92,3 +92,29 @@ input:focus, select:focus { outline: 2px solid #7dd3fc; outline-offset: 1px; }
 .check li { margin-bottom: 2px; }
 
 .note.warn { color: #b45309; }
+
+/* --- ダークモード --- */
+html[data-tus-theme="dark"] {
+  color-scheme: dark;
+  --bd: #2a323c;
+  --tx: #e5e7eb;
+  --mut: #9aa5b1;
+  --ac: #14b8a6;
+}
+html[data-tus-theme="dark"] body { background: #0f141a; }
+html[data-tus-theme="dark"] header { background: #0b0f14; }
+html[data-tus-theme="dark"] header .sub { color: #9aa5b1; }
+html[data-tus-theme="dark"] section { background: #171d25; }
+html[data-tus-theme="dark"] input[type="text"],
+html[data-tus-theme="dark"] input[type="number"],
+html[data-tus-theme="dark"] select {
+  background: #0f1317;
+  border-color: #39414a;
+  color: var(--tx);
+}
+html[data-tus-theme="dark"] .btn { background: #232a33; border-color: #39414a; }
+html[data-tus-theme="dark"] .btn:hover { background: #2b333c; }
+html[data-tus-theme="dark"] .status.ok { color: #4ade80; }
+html[data-tus-theme="dark"] .status.bad { color: #f87171; }
+html[data-tus-theme="dark"] .check { color: #c7ced6; }
+html[data-tus-theme="dark"] .note.warn { color: #fbbf24; }

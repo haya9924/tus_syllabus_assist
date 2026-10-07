@@ -68,7 +68,9 @@
   color: #fff;
   padding: 10px 16px;
   border-radius: 4px;
-  z-index: 999999;
+  /* ダークモードの反転オーバーレイ（z-index:2147482000）より上に置き、
+     元の黒地のまま表示する。サイドバー(2147483000)よりは下に維持。 */
+  z-index: 2147482500;
   font-size: 13px;
   opacity: 0;
   transition: opacity 0.2s;
